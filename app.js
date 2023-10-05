@@ -1,5 +1,6 @@
 const express = require("express");
 const app=express();
+const tg_bot=require("./TelegramBot/botMethods");
 
 
 app.set('view engine', 'ejs');
@@ -80,3 +81,4 @@ unix_client.on('data', (msg) => {
     }
 })
 ///TODO add telegramm as alarm receiver !!!!
+//    tg_bot.botAllSendMessage("cho-kavo");

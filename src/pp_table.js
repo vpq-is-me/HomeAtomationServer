@@ -10,7 +10,6 @@ const table_rows={
     PP_RUN_MIN:	{val:-1,descr:"Кратчайшее включение\nнасоса,с",color: "#3ff",checked:"checked",yscale: "y20"},
     PP_RUN_AT_PULSE:{val:-1,descr:"Время работы насоса\nв момент импульса,с",color: "#fff",checked:"disabled",yscale: "y20"},
     date:{val:-1,descr:"hidden anyway",color: "#fff",checked:"checked",yscale: "y20",hidden:true,},
-    consum_rate:{val:-1,descr:"Рейт потребления ,с",color: "#fff",checked:"unchecked",yscale: "y20",calculated:true,},
 }
 
 function PumpTableDraw(jpump_data){
