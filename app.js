@@ -105,12 +105,12 @@ let alarm_bitfields={
     /* WP_ALARM_SEPTIC_REQ_SDWN */      [1 << 9]:"АВАРИЯ: Септик переполнен! Не использовать воду!",
     /* WP_ALARM_SEPTIC_NOT_SEND */      [1 << 10]:"ВНИМАНИЕ: Аварийный датчик уровня в септике не отвечает! Проверить состояние септика!",
 }
- let cnt=0;
+//  let cnt=0;
 function TGAlarmDispather(){
     this.prev_alarm_state=0;
     this.Update=function(new_alarm_state){
- cnt++
- if(cnt>=2 && cnt<=4)new_alarm_state=16
+//  cnt++
+//  if(cnt>=2 && cnt<=4)new_alarm_state=16
         if(this.prev_alarm_state!==new_alarm_state){
             let diff=this.prev_alarm_state ^ new_alarm_state;
             for(key in alarm_bitfields){
