@@ -1,23 +1,19 @@
 const TelegramBot = require("node-telegram-bot-api");
 const UserDB = require("./UsersDB.js")
+const fs=require('fs')
+
 let users_arr=[];
-let bot = new TelegramBot('***REMOVED***', {polling: true});
 
-
-const dbInit = async () => {
+const Init = async () => {
     try {
-
+        TGBot.InitTG();
         //Initializing db and putting values from table in users_arr array
-        UserDB.InitDB(users_arr); 
-
+        UserDB.InitDB(users_arr);
     } catch (error) {
         console.error("Ошибка инициализации бд:", error);
     }
 };
-
-//Creating bot instance
-
-
+//************************************************************** */
 //Commands to show in "Menu" button in telegram chat interface
 const commands = [
     {
@@ -33,65 +29,75 @@ const commands = [
         description: "Скопировать сообщение (тест)"
     }
 ];
-bot.setMyCommands(commands);
-
-//Error handler
-bot.on("polling_error", err => console.log(err));
-
-//Subscribe user
-bot.onText(/start/, async msg => {
-    let user = msg.chat.id;
-    if (users_arr.includes(user)) {
-        botSendMessage("Вы уже в списке", user);
-    } 
-    else{
-        users_arr.push(user)
-        UserDB.add_user(user);
-        botSendMessage("Вы подписались", user); 
+// let bot;
+function TGBot_ (){
+    this.id='***REMOVED***';//default is home's bot id
+    this.bot;
+    this.InitTG=()=>{    
+        try{
+            this.id=fs.readFileSync('./TelegramBot/bot_id.txt','ascii')
+        }catch(error){
+            console.error('Can`t open file with telegram bot ID "bot_id.txt": ', error);
+        }
+        try{
+            //Creating bot instance
+            this.bot = new TelegramBot(this.id, {polling: true});
+            this.bot.setMyCommands(commands);
+            //Error handler
+            this.bot.on("polling_error", err => console.log(err));
+            //Subscribe user
+            this.bot.onText(/\/start/, (msg,match) => {
+                let user = msg.chat.id;
+                if (users_arr.includes(user)) {
+                    this.bot.sendMessage(user,"Вы уже в списке");
+                } else {
+                    users_arr.push(user)
+                    UserDB.add_user(user);
+                    this.bot.sendMessage(user,"Вы подписались");
+                }
+            });
+            //Delete user from subscribers
+            this.bot.onText(/\/unsub/, async msg => {
+                let user = msg.chat.id;
+                if (users_arr.includes(user)) {
+                    users_arr.pop(user)
+                    UserDB.remove_user(user);
+                    this.bot.sendMessage(user,"Вы отписались");
+                } else {
+                    this.bot.sendMessage(user,"Вы итак не были подписаны");
+                }
+            });
+            //Echo command for test
+            this.bot.onText(/echo/, msg => {
+                let user = msg.chat.id;
+                this.bot.sendMessage(user,msg.text);
+            });
+        }catch(error){
+            console.error("failure to start telegram bot: ",error);
+        }
     }
-})
-
-//Delee user from subscribers
-bot.onText(/unsub/, async msg => {
-    let user = msg.chat.id;
-    if (users_arr.includes(user)) {
-        users_arr.pop(user)
-        UserDB.remove_user(user);
-        botSendMessage("Вы отписались", user);
-    } 
-    else{
-
-        botSendMessage("Вы итак не были подписаны", user); 
+    this.sendMessage=(user,message)=>{
+        this.bot.sendMessage(user, message,{parse_mode: 'HTML'})
     }
-})
+    this.sendMessage2All=(message)=>{
+        users_arr.forEach( (user) => {
+            TGBot.sendMessage(user, message,{parse_mode: 'HTML'})
+        });    
+    } 
+}
+const TGBot=new TGBot_();
 
-//Echo command for test
-bot.onText(/echo/, async msg => {
-    let user = msg.chat.id;
-    botSendMessage(msg.text, user);
-
-})
 //Send message for all users that are subscribed
-const botAllSendMessage = async (message) => {
-    users_arr.forEach( (user) => {
-        bot.sendMessage(user, message)
-    });
-
+const botAllSendMessage = (message) => {
+    TGBot.sendMessage2All(message)
 }
 
-//Send message to one subscriber
-const botSendMessage = ( message, user) => {
-    bot.sendMessage(user, message)
-}
-
-//Init database when loading file
-dbInit();
+//Initialize  when loading file
+Init();
 
 //Export methods to use hem in other files
 module.exports = {
-    botSendMessage,
     botAllSendMessage,
-
 }
 
 
