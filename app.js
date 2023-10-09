@@ -82,18 +82,6 @@ unix_client.on('data', (msg) => {
     }
 })
 //************************************************************** */
-//const WP_ALARM_TANK_VOLUME_LOW        (1 << 0)
-//const WP_ALARM_TANK_VOLUME_LOW_LOW    (1 << 1)(1 << 2)
-// const WP_ALARM_CHECKVALVE_LEAK=       1 << 2
-// const WP_ALARM_PUMP_CAPACITY_LOW =    1 << 3
-// const WP_ALARM_PUMP_CAPACITY_LOW_LOW =1 << 4
-// const WP_ALARM_BYPASS_SW_ON =         1 << 5
-// const WP_ALARM_PUMP_LONG_RUN =        1 << 6
-// const WP_ALARM_FREQUENT_START =       1 << 7
-// const WP_ALARM_FREQUENT_START_HIGH =  1 << 8
-// const WP_ALARM_SEPTIC_REQ_SDWN =      1 << 9
-// const WP_ALARM_SEPTIC_NOT_SEND =      1 << 10
-
 let alarm_bitfields={
     /* WP_ALARM_CHECKVALVE_LEAK */      [1 << 2]:"ВНИМАНИЕ: Проверь обратный клапан",
     /* WP_ALARM_PUMP_CAPACITY_LOW */    [1 << 3]:"ВНИМАНИЕ: Снижена производительность насоса",
@@ -105,12 +93,12 @@ let alarm_bitfields={
     /* WP_ALARM_SEPTIC_REQ_SDWN */      [1 << 9]:"АВАРИЯ: Септик переполнен! Не использовать воду!",
     /* WP_ALARM_SEPTIC_NOT_SEND */      [1 << 10]:"ВНИМАНИЕ: Аварийный датчик уровня в септике не отвечает! Проверить состояние септика!",
 }
-//  let cnt=0;
+//   let cnt=0;
 function TGAlarmDispather(){
     this.prev_alarm_state=0;
     this.Update=function(new_alarm_state){
-//  cnt++
-//  if(cnt>=2 && cnt<=4)new_alarm_state=16
+//   cnt++
+//   if(cnt>=2 && cnt<=4)new_alarm_state=16
         if(this.prev_alarm_state!==new_alarm_state){
             let diff=this.prev_alarm_state ^ new_alarm_state;
             for(key in alarm_bitfields){
@@ -132,4 +120,4 @@ function TGAlarmDispather(){
 
 tg_alarm_disp=new TGAlarmDispather();
 ///TODO add telegramm as alarm receiver !!!!
-//    tg_bot.botAllSendMessage("cho-kavo");
+

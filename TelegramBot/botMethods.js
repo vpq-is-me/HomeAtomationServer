@@ -30,6 +30,8 @@ const commands = [
     }
 ];
 // let bot;
+//TelegramWaterBot: ***REMOVED***  test
+//HomeAutomation_waterPump_bot: ***REMOVED***  home
 function TGBot_ (){
     this.id='***REMOVED***';//default is home's bot id
     this.bot;
