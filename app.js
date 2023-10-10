@@ -26,6 +26,7 @@ app.get('/reset_alarm', (req, res) => {
     res.end('reset_done');
 })
 //************************************* */
+//TODO limit maximum queuing requests!!!
 function ManagerResponser(){
     this.query_res_arr=[];
     this.NewReq=function(req,res){
@@ -33,6 +34,12 @@ function ManagerResponser(){
         unix_client.write(JSON.stringify(req));
     }
     this.Answer=function(payload){
+         for(let i=0;i<this.query_res_arr.length;i++){//remove old closed dangling request
+            if(this.query_res_arr[i].closed){
+                this.query_res_arr.shift();
+            }
+        }       //TODO !!!! chek dangling request
+        if(this.query_res_arr.length===0)return;//it is too late to send somthing
         var res=this.query_res_arr.shift();
         if(typeof(res)!=="undefined"){
             res.send(JSON.stringify(payload));
