@@ -55,7 +55,7 @@ function InitChart(trend_js){
                             });            
                             if(index!=undefined){
                                 let tm=new Date(index.data[tooltipItems[0].dataIndex]*1000);
-                                let txt=tm.toLocaleString("ru-RU");
+                                let txt=tm.toLocaleString("ru-RU",{timeZone: "UTC"});
                                 return txt;
                             }
                             return '---';
@@ -88,7 +88,8 @@ function InitChart(trend_js){
                     if(index!=undefined){
                         let beg_time=new Date(index.data[0]*1000);
                         let end_time=new Date(index.data[index.data.length-1]*1000);
-                        chart.options.plugins.title.text=beg_time.toLocaleString("ru-RU")+' <---> '+end_time.toLocaleString("ru-RU");
+                        chart.options.plugins.title.text=beg_time.toLocaleString("ru-RU",{timeZone: "UTC"})+' <---> '+end_time.toLocaleString("ru-RU",{timeZone: "UTC"});
+                        // chart.options.plugins.title.text=beg_time.toLocaleString("ru-RU")+' <---> '+end_time.toUTCString();
                     }
                 },
             },
