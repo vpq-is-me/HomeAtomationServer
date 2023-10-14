@@ -24,7 +24,7 @@ function InitChart(trend_js){
     basic_trends = new Chart("basic_trend", {
         type: "line",
         data: {
-            labels: trend_js.data.id,
+            labels: trend_js.data.WF_counter,
             datasets: [],
         },                
         options: {
@@ -116,7 +116,7 @@ function DrawTrends(trend_js){
             }                
         }
         if(ds===basic_trends.data.datasets.length){//this trend was not in banch before                
-            if("id"===key)continue;
+            if("WF_counter"===key)continue;
             let new_ds={
                 label: key,
                 backgroundColor: hexToRgbA(table_rows[key].color,1),
@@ -148,7 +148,7 @@ async function DrawBasicTrandInitial(){
         base:"last",
         direction:"up",
         amount:50,
-        columns: ["id"],
+        columns: ["WF_counter"],
     };
     for(let key in table_rows){
         if(table_rows[key].checked==="checked"){
@@ -163,8 +163,8 @@ DrawBasicTrandInitial();
 //********************************************** */
 async function ActivateNewTrend(key){
     let query={
-        base:"id",
-        id: parseInt(basic_trends.data.labels[0]),
+        base:"counter",
+        counter: parseInt(basic_trends.data.labels[0]),
         direction:"up",
         amount:50,
         columns: [],
@@ -181,21 +181,21 @@ function TrendMoveLL(){
 
 async function TrendMove_L_LL(factor){
     if(basic_trends===undefined)return;
-    let ref_id=basic_trends.data.labels[0]-1;
+    let ref_counter=basic_trends.data.labels[0]-1;
     let length=basic_trends.data.labels.length*factor;
     let query={
-        base:"id",
+        base:"counter",
         direction:"down",
-        id:ref_id,
+        counter:ref_counter,
         amount:length,
-        columns: ["id"],
+        columns: ["WF_counter"],
     };
     for(let i=0; i<basic_trends.data.datasets.length;i++){
         query.columns.push(basic_trends.data.datasets[i].label);
     }
     let trend_data=await GetTrendData(query);
     length=basic_trends.data.labels.length;
-    let tmp=trend_data.data["id"].concat(basic_trends.data.labels);
+    let tmp=trend_data.data["WF_counter"].concat(basic_trends.data.labels);
     basic_trends.data.labels=tmp.slice(0,length);
     for(let i=0; i<basic_trends.data.datasets.length;i++){
         tmp=trend_data.data[basic_trends.data.datasets[i].label].concat(basic_trends.data.datasets[i].data);
@@ -211,22 +211,22 @@ function TrendMoveRR(){
 
 async function TrendMove_R_RR(factor){
     if(basic_trends===undefined)return;
-    let ref_id=1+parseInt(basic_trends.data.labels[basic_trends.data.labels.length-1]);
+    let ref_counter=1+parseInt(basic_trends.data.labels[basic_trends.data.labels.length-1]);
     let add_length=basic_trends.data.labels.length*factor;
     let query={
-        base:"id",
+        base:"counter",
         direction:"up",
-        id:ref_id,
+        counter:ref_counter,
         amount:add_length,
-        columns: ["id"],
+        columns: ["WF_counter"],
     };
     for(let i=0; i<basic_trends.data.datasets.length;i++){
         query.columns.push(basic_trends.data.datasets[i].label);
     }
     let trend_data=await GetTrendData(query);
     let length=basic_trends.data.labels.length;
-    add_length=trend_data.data["id"].length;
-    let tmp=basic_trends.data.labels.concat(trend_data.data["id"]);
+    add_length=trend_data.data["WF_counter"].length;
+    let tmp=basic_trends.data.labels.concat(trend_data.data["WF_counter"]);
     basic_trends.data.labels=tmp.slice(add_length);
     for(let i=0; i<basic_trends.data.datasets.length;i++){
         tmp=basic_trends.data.datasets[i].data.concat(trend_data.data[basic_trends.data.datasets[i].label]);
@@ -240,13 +240,13 @@ async function TrendMoveLast(){
         base:"last",
         direction:"up",
         amount:50,
-        columns: ["id"],
+        columns: ["WF_counter"],
     };
     for(let i=0; i<basic_trends.data.datasets.length;i++){
         query.columns.push(basic_trends.data.datasets[i].label);
     }
     let trend_data=await GetTrendData(query);
-    basic_trends.data.labels=trend_data.data["id"];
+    basic_trends.data.labels=trend_data.data["WF_counter"];
     for(let i=0; i<basic_trends.data.datasets.length;i++){
         basic_trends.data.datasets[i].data=trend_data.data[basic_trends.data.datasets[i].label];
     }
@@ -259,7 +259,7 @@ async function TrendJump2time(time){
         date: epoche_time,
         direction: "down",
         amount: 50,
-        columns: ["id"],
+        columns: ["WF_counter"],
     };
     for (let i = 0; i < basic_trends.data.datasets.length; i++) {
         query.columns.push(basic_trends.data.datasets[i].label);
@@ -269,7 +269,7 @@ async function TrendJump2time(time){
         alert("Такой даты нет в базе");
         return;
     }
-    basic_trends.data.labels = trend_data.data["id"];
+    basic_trends.data.labels = trend_data.data["WF_counter"];
     for (let i = 0; i < basic_trends.data.datasets.length; i++) {
         basic_trends.data.datasets[i].data = trend_data.data[basic_trends.data.datasets[i].label];
     }
