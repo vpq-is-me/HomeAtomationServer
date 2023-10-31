@@ -33,7 +33,8 @@ function AlarmTableDraw(jalarms_data){
         c1.innerText=tm.toLocaleString("ru-RU",{timeZone: "UTC"});
 
         let c2=document.createElement("td");
-        let al_txt=alarms_reason_tb[mask.toString()]; 
+        let al_txt=alarms_reason_tb[mask.toString()];
+        if(al_txt===undefined)al_txt="undefined yet"; 
         if(rise){
             if (al_txt.indexOf("ВНИМАНИЕ") >= 0) c2.innerHTML='<p style="color:darkorange; margin : 0">&#x2757</p>'; //❗ ⚠️  
             else c2.innerHTML='<p style="color:red; margin : 0">&#x274C</p>';//❌   
