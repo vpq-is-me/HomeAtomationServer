@@ -39,6 +39,7 @@ function ManagerResponser(){
                 this.query_res_arr.shift();
             }
         }       //TODO !!!! chek dangling request
+        //TODO !!! check somtimes answer is stupid and broke trend
         if(this.query_res_arr.length===0)return;//it is too late to send somthing
         var res=this.query_res_arr.shift();
         if(typeof(res)!=="undefined"){
@@ -50,6 +51,11 @@ var mng_resp=new ManagerResponser();
 //************************************** */
 app.post('/basic_trend_data', (req, res) => {
     let down_req = Object.assign({ tag: 3 }, req.body);
+    mng_resp.NewReq(down_req,res);
+})
+//************************************** */
+app.post('/alarms', (req, res) => {
+    let down_req = Object.assign({ tag: 4 }, req.body);
     mng_resp.NewReq(down_req,res);
 })
 //****************** */
@@ -77,7 +83,7 @@ unix_client.on('data', (msg) => {
         var jrec = JSON.parse(msg.toString());
         console.log(jrec);
         if ('tag' in jrec) {
-            if (jrec.tag === 3) {
+            if (jrec.tag === 3 || jrec.tag === 4) {
                 mng_resp.Answer(jrec);
             }
         } else {

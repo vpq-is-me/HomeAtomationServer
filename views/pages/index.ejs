@@ -14,13 +14,19 @@
         border-radius: 3px;
         display: inline-block;
       }
+      /* Fix table head */
+        .tableFixHead    { overflow: auto; height: 200px; }
+        .tableFixHead th { position: sticky; top: 0; } 
+        .tableFixHead th     { background:#eee;}
+        .tableFixHead th, td ,tr { padding: 0 !important; }
+        /* .tableFixHead thead { border-color: blue;border-width: 2px; } */
     </style>
 </head>
 <body>
     <div class="container text-center">
         <div class="row">
-            <div class="col">
-                <h1 class="card-header"> Текущие данные насоса  </h1>
+            <div class="col-4">
+                <h4 class="card-header"> Текущие данные насоса  </h4>
                 <div id="table_place"> 
                     <table border="2" id="inst_table_id" class="table table-sm table-hover table-bordered">
                         <thead class="table-info">                 
@@ -36,7 +42,7 @@
                 <button id="ResetBtn" class="btn btn-outline-primary">Reset</button>
             </div>
         
-            <div class="col">
+            <div class="col-8">
                 <div class="row">
                     <div style="width: 800px;">
                         <canvas id="basic_trend"></canvas>
@@ -61,7 +67,21 @@
             </div>
         
             <div class="col">
-                <h2> <div id='alarms'>Алармов нет</div></h2>                
+                <div class="tableFixHead">
+                    <table id="alarms_table_id" class="table table-sm table-hover table-bordered" >
+                        <thead>
+                            <tr>
+                                <th>Время</th>
+                                <th>&#x2690</th>
+                                <th>Описание тревоги</th>
+                                <th>Бит</th>
+                                <th>Счетчик</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alarms_tbody_id">
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <h1>  </h1> 
             <h1>  </h1> 
@@ -71,6 +91,7 @@
     
 
     <script type="text/javascript" src="pp_table.js"></script>
+    <script type="text/javascript" src="alarm_table.js"></script>
     <script type="text/javascript">
         window.onload = () => {
             rome(end_dtime_picker_id,{weekStart:1});
@@ -83,6 +104,7 @@
                 pump_data_obj = JSON.parse(text);
                 PumpTableDraw(pump_data_obj)
             }, 1000);
+            GetAlarmData();
         }
     </script>
 	<script src="chart.umd.js"></script>

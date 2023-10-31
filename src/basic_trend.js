@@ -66,10 +66,6 @@ function InitChart(trend_js){
             animation:{
                 duration:1000,
                 easing:'easeInOutCubic',
-                // onComplete: function(animation){
-                //      if(!(animation.initial)){
-                //          this.options.plugins.title.text=this.data.labels[0].toString();}
-                // }
             },
             interaction: {
                 mode: 'nearest',
@@ -89,19 +85,9 @@ function InitChart(trend_js){
                         let beg_time=new Date(index.data[0]*1000);
                         let end_time=new Date(index.data[index.data.length-1]*1000);
                         chart.options.plugins.title.text=beg_time.toLocaleString("ru-RU",{timeZone: "UTC"})+' <---> '+end_time.toLocaleString("ru-RU",{timeZone: "UTC"});
-                        // chart.options.plugins.title.text=beg_time.toLocaleString("ru-RU")+' <---> '+end_time.toUTCString();
                     }
                 },
             },
-            // {
-            //     id: 'myEventCatcher',
-            //     beforeEvent(chart, args, pluginOptions) {
-            //       const event = args.event;
-            //       if (event.type === 'mouseout') {
-            //         // process the event
-            //       }
-            //     }
-            // },
         ],
     });
 }
