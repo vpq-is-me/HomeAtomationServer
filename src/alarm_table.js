@@ -56,59 +56,6 @@ function AlarmTableDraw(jalarms_data){
         c5.innerText=jalarms_data.data.WF_counter[i];
     }
 }
-// function AlarmTableDraw(jalarms_data){
-//     let d_len=jalarms_data.data.date.length;
-//     if(!Number.isInteger(d_len))return;
-//     let prev_al=0;
-//     for(let i=0;i<d_len;i++){
-//         let row=document.createElement("tr");
-//         let c1=document.createElement("td");
-//         let tm=new Date(jalarms_data.data.date[i]*1000);
-//         c1.innerText=tm.toLocaleString("ru-RU",{timeZone: "UTC"});
-        
-//         //TODO !!!! if 2 or more alarms occured at same time do somthing/ may be add text in 1 line
-//         //todo !!! reverse order
-//         let c2=document.createElement("td");
-//         c2.innerHTML="";
-//         let c3=document.createElement("td");
-//         c3.innerHTML="";
-//         let c4=document.createElement("td");
-//         c4.innerHTML="";
-//         let al=jalarms_data.data.alarms[i];
-//         let chng=al^prev_al;
-//         if(chng){
-//             let mask=1;
-//             for(let bitn=0;bitn<32;bitn++){
-//                 if(chng & mask){
-//                     let al_txt='<p style="margin : 0">'+alarms_reason_tb[mask.toString()]+"</p>";
-//                     if(mask & al){//alarm rising
-//                         if (al_txt.indexOf("ВНИМАНИЕ") >= 0) c2.innerHTML+='<p style="color:darkorange; margin : 0">&#x2757</p>'; //❗ ⚠️  
-//                         else c2.innerHTML+='<p style="color:red; margin : 0">&#x274C</p>';//❌ 
-//                         c3.innerHTML+=al_txt;
-//                     }else {
-//                         c2.innerHTML+='<p style="color:green; margin : 0">&#x2713</p>'; //✔️
-//                         c3.innerHTML+='<s>'+al_txt+'</s>';
-//                     }
-//                     c4.innerHTML+='<p style="margin : 0">'+bitn+'</p>';
-//                 }
-//                 mask<<=1;
-//             }
-//         }else{
-//             c2.innerHTML="-";
-//             c3.innerHTML="undefined yet" ;
-//         }
-//         prev_al=al;       
-        
-//         let c5=document.createElement("td");        
-//         c5.innerText=jalarms_data.data.WF_counter[i];
-//         row.append(c1);
-//         row.append(c2);
-//         row.append(c3);
-//         row.append(c4);
-//         row.append(c5);
-//         document.getElementById("alarms_tbody_id").appendChild(row);
-//     }
-// }
 //***************************************************************************** */
 async function GetAlarmData(){
     let init_query={
@@ -125,9 +72,18 @@ async function GetAlarmData(){
             body: JSON.stringify(init_query),
          });
         let alarms_js = await resp.json();
-//        return trend_js;
         AlarmTableDraw(alarms_js);
     }catch(err){
         console.error("Trend data request error->", err);
     }
+}
+//TODO !!! optimize to not redraw entire table
+function AlTabNewAlarm(){
+    al_tab_cont=document.getElementById("alarms_table_id");
+    if(al_tab_cont.scrollTop!==0)return;
+    let al_tab = document.getElementById("alarms_tbody_id");
+    while(al_tab.rows.length){
+        al_tab.deleteRow(0);
+    }
+    GetAlarmData();
 }

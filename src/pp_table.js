@@ -34,12 +34,16 @@ function PumpTableDraw(jpump_data){
             row.appendChild(c3);
             document.getElementById('inst_tbody_id').appendChild(row);
         }
-    } else {   
+    } else { 
+        let al_prev=document.getElementById("cell_alarms").textContent;  
         for (let key in jpump_data) {
             let dist_cell_id = "cell_" + key.toString();
             dist_cell=document.getElementById(dist_cell_id);
             if(dist_cell)dist_cell.textContent = jpump_data[key];
         }
+        let al_cur=document.getElementById("cell_alarms").textContent;
+
+        if(al_prev!=='---' && al_cur!=al_prev)AlTabNewAlarm();
     }    
  }
 async function enable_trend(chk_box){
