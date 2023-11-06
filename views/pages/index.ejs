@@ -129,7 +129,8 @@
             let jump_time=document.getElementById('end_dtime_picker_id').value;
             TrendJump2time(jump_time);
         }
-       
+        document.getElementById("alarms_table_id").addEventListener("scrollend",AlTabScrolled);
+        // document.querySelector("div#alarms_table_id").addEventListener("scrolled",)      
     </script>
 	<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js/Chart.min.js"></script> -->
 	<!-- <script type="text/javascript" src="http://www.chartjs.org/assets/Chart.js"> </script> -->

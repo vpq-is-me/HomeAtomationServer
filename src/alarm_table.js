@@ -78,6 +78,8 @@ async function GetAlarmData(){
     }
 }
 //TODO !!! optimize to not redraw entire table
+//TODO !!! sometines not realy updatet upper row because DB is not updatet yet
+//***************************************************************************** */
 function AlTabNewAlarm(){
     al_tab_cont=document.getElementById("alarms_table_id");
     if(al_tab_cont.scrollTop!==0)return;
@@ -86,4 +88,7 @@ function AlTabNewAlarm(){
         al_tab.deleteRow(0);
     }
     GetAlarmData();
+}
+function AlTabScrolled(event){
+    AlTabNewAlarm();
 }

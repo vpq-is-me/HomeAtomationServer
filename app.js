@@ -30,15 +30,18 @@ app.get('/reset_alarm', (req, res) => {
 function ManagerResponser(){
     this.query_res_arr=[];
     this.NewReq=function(req,res){
+        if(this.query_res_arr.length>0){
+            do{
+                if(this.query_res_arr[0].closed)this.query_res_arr.shift();
+                else break;
+            }while(this.query_res_arr.length>0);
+        }
         this.query_res_arr.push(res);
+        console.log(`           *** in queue stay ${this.query_res_arr.length} requests`)
         unix_client.write(JSON.stringify(req));
     }
     this.Answer=function(payload){
-         for(let i=0;i<this.query_res_arr.length;i++){//remove old closed dangling request
-            if(this.query_res_arr[i].closed){
-                this.query_res_arr.shift();
-            }
-        }       //TODO !!!! chek dangling request
+      //TODO !!!! chek dangling request
         //TODO !!! check somtimes answer is stupid and broke trend
         if(this.query_res_arr.length===0)return;//it is too late to send somthing
         var res=this.query_res_arr.shift();
@@ -46,6 +49,7 @@ function ManagerResponser(){
             res.send(JSON.stringify(payload));
         }
     }
+
 }
 var mng_resp=new ManagerResponser();
 //************************************** */
