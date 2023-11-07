@@ -104,7 +104,7 @@
                 pump_data_obj = JSON.parse(text);
                 PumpTableDraw(pump_data_obj)
             }, 1000);
-            GetAlarmData();
+            AlTabInit();
         }
     </script>
 	<script src="chart.umd.js"></script>
@@ -129,8 +129,7 @@
             let jump_time=document.getElementById('end_dtime_picker_id').value;
             TrendJump2time(jump_time);
         }
-        document.getElementById("alarms_table_id").addEventListener("scrollend",AlTabScrolled);
-        // document.querySelector("div#alarms_table_id").addEventListener("scrolled",)      
+        alarms_table_id.onscroll=AlTabScrolled;
     </script>
 	<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js/Chart.min.js"></script> -->
 	<!-- <script type="text/javascript" src="http://www.chartjs.org/assets/Chart.js"> </script> -->
