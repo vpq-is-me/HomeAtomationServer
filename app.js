@@ -30,6 +30,7 @@ app.get('/reset_alarm', (req, res) => {
 function ManagerResponser(){
     this.query_res_arr=[];
     this.NewReq=function(req,res){
+        console.log(`           *** in queue exist ${this.query_res_arr.length} requests before clear`)
         if(this.query_res_arr.length>0){
             do{
                 if(this.query_res_arr[0].closed)this.query_res_arr.shift();
@@ -37,7 +38,7 @@ function ManagerResponser(){
             }while(this.query_res_arr.length>0);
         }
         this.query_res_arr.push(res);
-        console.log(`           *** in queue stay ${this.query_res_arr.length} requests`)
+        console.log(`           *** in queue stlill stay ${this.query_res_arr.length} requests`)
         unix_client.write(JSON.stringify(req));
     }
     this.Answer=function(payload){
@@ -85,7 +86,7 @@ unix_client.on('connect', () => {
 unix_client.on('data', (msg) => {
     try {
         var jrec = JSON.parse(msg.toString());
-        console.log(jrec);
+//DEBUG        console.log(jrec);
         if ('tag' in jrec) {
             if (jrec.tag === 3 || jrec.tag === 4) {
                 mng_resp.Answer(jrec);

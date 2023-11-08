@@ -89,7 +89,6 @@ async function AlTabInit(){
     if(alarms_js===undefined)return;
     AlarmTableDraw(alarms_js);
 }
-//TODO !!! optimize to not redraw entire table
 //TODO !!! sometines not realy updatet upper row because DB is not updatet yet
 //***************************************************************************** */
 function AlTabNewAlarm(){
@@ -97,7 +96,7 @@ function AlTabNewAlarm(){
     if(al_tab_cont.scrollTop!==0)return;
     let dummy_cnt=0;
     let timer=setInterval(async()=>{//sometines not realy updatet upper row because DB is not updatet yet
-        let len=AlTabSlideUp(1);
+        let len=await AlTabSlideUp(1);
         dummy_cnt++;
         if(len!=0 || dummy_cnt>100)clearInterval(timer);
     },3000);
