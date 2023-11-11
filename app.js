@@ -182,7 +182,8 @@ const SEPTIC_MAX_TIMEOUT_FROM_LAST_MSG_sec=(5*60);
                 var sept_ans = JSON.parse(data.toString());                
                 if('msg_timer' in sept_ans){
                     septic_message_tout=sept_ans.msg_timer;
-                    console.log(`Septic message timeout ${septic_message_tout}`);
+                    if(septic_message_tout>60)
+                        console.log(`Septic message timeout ${septic_message_tout}`);
                 }                
             })
         }else{
