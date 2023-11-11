@@ -29,28 +29,36 @@ app.get('/reset_alarm', (req, res) => {
 //TODO limit maximum queuing requests!!!
 function ManagerResponser(){
     this.query_res_arr=[];
+    this.inprocess=false;
+    this.timeout=undefined;
     this.NewReq=function(req,res){
-        console.log(`           *** in queue exist ${this.query_res_arr.length} requests before clear`)
-        if(this.query_res_arr.length>0){
-            do{
-                if(this.query_res_arr[0].closed)this.query_res_arr.shift();
-                else break;
-            }while(this.query_res_arr.length>0);
-        }
-        this.query_res_arr.push(res);
+        this.query_res_arr.push({req:req,res:res});
         console.log(`           *** in queue stlill stay ${this.query_res_arr.length} requests`)
-        unix_client.write(JSON.stringify(req));
+        this.ProcNext();
     }
     this.Answer=function(payload){
-      //TODO !!!! chek dangling request
-        //TODO !!! check somtimes answer is stupid and broke trend
-        if(this.query_res_arr.length===0)return;//it is too late to send somthing
-        var res=this.query_res_arr.shift();
-        if(typeof(res)!=="undefined"){
-            res.send(JSON.stringify(payload));
-        }
+        clearTimeout(this.timeout);
+        var req_res=this.query_res_arr.shift();
+        if(typeof(req_res)!=="undefined"){
+            req_res.res.send(JSON.stringify(payload));
+        } 
+        this.inprocess=false;       
+        this.ProcNext();
     }
-
+    
+    this.ProcNext=function(){
+        if(this.inprocess)return;
+        if(this.query_res_arr.length===0)return;
+        this.timeout=setTimeout(()=>{//if we here than somting in request down to DB had gone wrong
+            let req_res=mng_resp.query_res_arr.shift();
+            req_res.res.sendStatus(500);
+            mng_resp.inprocess=false;
+            mng_resp.ProcNext();
+        },1000);//max 1 sec to process request to DB
+        this.inprocess=true;
+        let req_res=this.query_res_arr[0];
+        unix_client.write(JSON.stringify(req_res.req));
+    }
 }
 var mng_resp=new ManagerResponser();
 //************************************** */
