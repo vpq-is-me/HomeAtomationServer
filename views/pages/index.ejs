@@ -73,7 +73,7 @@
                             <tr>
                                 <th>Время</th>
                                 <th>&#x2690</th>
-                                <th>Описание тревоги</th>
+                                <th>Описание тревоги  ( <input class="form-check-input" type="checkbox" id=chk_septic_tout_filter_id value="true"> фильтровать: "датчик уровня в септике не отвечает")</th>
                                 <th>Бит</th>
                                 <th>Счетчик</th>
                             </tr>
@@ -130,6 +130,7 @@
             TrendJump2time(jump_time);
         }
         alarms_table_id.onscroll=AlTabScrolled;
+        chk_septic_tout_filter_id.onclick=AlTabReInit;
     </script>
 	<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js/Chart.min.js"></script> -->
 	<!-- <script type="text/javascript" src="http://www.chartjs.org/assets/Chart.js"> </script> -->

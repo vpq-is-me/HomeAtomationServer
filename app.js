@@ -69,7 +69,7 @@ app.post('/basic_trend_data', (req, res) => {
 //************************************** */
 app.post('/alarms', (req, res) => {
     let down_req = Object.assign({ tag: 4 }, req.body);
-    mng_resp.NewReq(down_req,res);
+    mng_resp.NewReq(down_req,res);    
 })
 //****************** */
 app.listen(8080,()=>{
@@ -155,7 +155,7 @@ function TGAlarmDispather(){
 
 tg_alarm_disp=new TGAlarmDispather();
 var septic_message_tout;
-const SEPTIC_MAX_TIMEOUT_FROM_LAST_MSG_sec=(5*60);
+const SEPTIC_MAX_TIMEOUT_FROM_LAST_MSG_sec=(30*60);
 (function () {
     var con_established=0;
     var sept_unix_client;
@@ -191,5 +191,4 @@ const SEPTIC_MAX_TIMEOUT_FROM_LAST_MSG_sec=(5*60);
         }
 
     }, 3000);
-
 }());

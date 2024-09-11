@@ -1,3 +1,4 @@
-node_modules/
+node_modules/*
 bot_id.txt
 TelegramBot/database.db
+

@@ -2,7 +2,7 @@ const alarms_reason_tb = {
     /* WP_ALARM_CHECKVALVE_LEAK */[1 << 2]: "ВНИМАНИЕ: Проверь обратный клапан",
     /* WP_ALARM_PUMP_CAPACITY_LOW */[1 << 3]: "ВНИМАНИЕ: Снижена производительность насоса",
     /* WP_ALARM_PUMP_CAPACITY_LOW_LOW */[1 << 4]: "АВАРИЯ: Снижена производительность насоса",
-    /* WP_ALARM_BYPASS_SW_ON */[1 << 5]: "ВНИМАНИЕ: Включен переключатель байпаса на контроллере насаса. НЕ ЗАБУДЬ ВЫКЛЮЧИТЬ!",
+    /* WP_ALARM_BYPASS_SW_ON */[1 << 5]: "ВНИМАНИЕ: Включен переключатель байпаса на контроллере насоса. НЕ ЗАБУДЬ ВЫКЛЮЧИТЬ!",
     /* WP_ALARM_PUMP_LONG_RUN */[1 << 6]: "АВАРИЯ: Большая продолжительность работы насоса",
     /* WP_ALARM_FREQUENT_START */[1 << 7]: "ВНИМАНИЕ: Частое включение насоса",
     /* WP_ALARM_FREQUENT_START_HIGH */[1 << 8]: "АВАРИЯ: Частое включение насоса",
@@ -64,6 +64,9 @@ function AlarmTableDraw(alarms_js){
 }
 //***************************************************************************** */
 async function GetAlarmData(query){
+    if(document.getElementById("chk_septic_tout_filter_id").checked==true){
+        query.filter=1023
+    }
     try {
         const resp = await fetch('/alarms',{
             method: "POST",
@@ -73,7 +76,7 @@ async function GetAlarmData(query){
             body: JSON.stringify(query),
          });
         let alarms_js = await resp.json();
-        return alarms_js;
+        return alarms_js;        
     }catch(err){
         console.error("Alarm data request error->", err);
     }
@@ -89,6 +92,16 @@ async function AlTabInit(){
     if(alarms_js===undefined)return;
     AlarmTableDraw(alarms_js);
 }
+//***************************************************************************** */
+async function AlTabReInit(){
+    let tab = document.getElementById("alarms_tbody_id")
+    let len=tab.rows.length;
+    for(let i=0; i<len;i++){
+        tab.deleteRow(-1);
+    }
+    AlTabInit();
+}
+
 //TODO !!! sometines not realy updatet upper row because DB is not updatet yet
 //***************************************************************************** */
 function AlTabNewAlarm(){
