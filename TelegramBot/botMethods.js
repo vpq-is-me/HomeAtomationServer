@@ -29,11 +29,8 @@ const commands = [
         description: "Скопировать сообщение (тест)"
     }
 ];
-// let bot;
-//TelegramWaterBot: ***REMOVED***  test
-//HomeAutomation_waterPump_bot: ***REMOVED***  home
 function TGBot_ (){
-    this.id='***REMOVED***';//default is home's bot id
+    this.id='654321:123456';
     this.bot;
     this.InitTG=()=>{    
         try{
