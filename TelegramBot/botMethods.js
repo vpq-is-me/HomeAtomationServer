@@ -29,8 +29,9 @@ const commands = [
         description: "Скопировать сообщение (тест)"
     }
 ];
+// let bot;
 function TGBot_ (){
-    this.id='654321:123456';
+    this.id='33';//default is home's bot id
     this.bot;
     this.InitTG=()=>{    
         try{

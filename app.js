@@ -69,7 +69,7 @@ app.post('/basic_trend_data', (req, res) => {
 //************************************** */
 app.post('/alarms', (req, res) => {
     let down_req = Object.assign({ tag: 4 }, req.body);
-    mng_resp.NewReq(down_req,res);    
+    mng_resp.NewReq(down_req,res);
 })
 //****************** */
 app.listen(8080,()=>{

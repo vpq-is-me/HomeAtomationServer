@@ -1,4 +1,5 @@
 node_modules/
 bot_id.txt
+bot_id_list.txt
 TelegramBot/database.db
 secret.txt
