@@ -73,7 +73,8 @@ app.post('/alarms', (req, res) => {
 })
 //****************** */
 app.listen(8080,()=>{
-    console.log('server started on port 8080')
+    let time=new Date().toLocaleTimeString();
+    console.log(time+'  server started on port 8080')
 });
 //************************************************************** */
 const net=require('net');
@@ -190,5 +191,5 @@ const SEPTIC_MAX_TIMEOUT_FROM_LAST_MSG_sec=(30*60);
             sept_unix_client.write(JSON.stringify({ 'tag': TAG_REQSNAP, 'val': 'msg_timer' }));   
         }
 
-    }, 3000);
+    }, 300000);//3000
 }());
