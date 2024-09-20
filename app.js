@@ -26,12 +26,13 @@ app.get('/reset_alarm', (req, res) => {
     res.end('reset_done');
 })
 //************************************* */
-//TODO limit maximum queuing requests!!!
+const MAX_CLIENT_REQUEST_QUEUE=16;
 function ManagerResponser(){
     this.query_res_arr=[];
     this.inprocess=false;
     this.timeout=undefined;
     this.NewReq=function(req,res){
+        if(this.query_res_arr.length>MAX_CLIENT_REQUEST_QUEUE)return;
         this.query_res_arr.push({req:req,res:res});
         console.log(`           *** in queue stlill stay ${this.query_res_arr.length} requests`)
         this.ProcNext();
@@ -191,5 +192,5 @@ const SEPTIC_MAX_TIMEOUT_FROM_LAST_MSG_sec=(30*60);
             sept_unix_client.write(JSON.stringify({ 'tag': TAG_REQSNAP, 'val': 'msg_timer' }));   
         }
 
-    }, 300000);//3000
+    }, 3000);//3000
 }());

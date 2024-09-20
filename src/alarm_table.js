@@ -102,7 +102,6 @@ async function AlTabReInit(){
     AlTabInit();
 }
 
-//TODO !!! sometines not realy updatet upper row because DB is not updatet yet
 //***************************************************************************** */
 function AlTabNewAlarm(){
     al_tab_cont=document.getElementById("alarms_table_id");

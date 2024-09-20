@@ -67,7 +67,7 @@ function TGBot_ (){
             this.bot.onText(/\/unsub/, async msg => {
                 let user = msg.chat.id;
                 if (users_arr.includes(user)) {
-                    users_arr.pop(user)
+                    users_arr.splice(users_arr.indexOf(user,1));
                     UserDB.remove_user(user);
                     this.bot.sendMessage(user,"Вы отписались");
                 } else {
@@ -83,49 +83,99 @@ function TGBot_ (){
             console.error("failure to start telegram bot: ",error);
         }
     }
+    ///*************************************************** */
     this.sendMessage=(user,idx)=>{
         this.bot.sendMessage(user, resend_queue[idx].msg,{parse_mode: 'HTML'})
         .then((tg_mes)=>{
-            resend_queue[idx].success_i++; 
-            let idx=resend_queue[idx].fail_id.indexOf(user);
-            if(idx>=0)resend_queue[idx].fail_id.splice(idx,1);                 
+            console.log("succesfuly sent to:"+user);             
+            let f_i=resend_queue[idx].fail_id.indexOf(user);
+            if(f_i>=0)resend_queue[idx].fail_id.splice(f_i,1);                 
         })
         .catch((reason)=>{
-            let idx=resend_queue[idx].fail_id.indexOf(user);
-            if(idx<0)resend_queue[idx].fail_id.push(user);            
+            let f_i = resend_queue[idx].fail_id.indexOf(user);
+            let rsn=""+reason;
+            if (rsn.includes("chat not found")) {//WRONG USER ID!We have to remove this user for future!
+                if (f_i >= 0) resend_queue[idx].fail_id.splice(f_i, 1);
+                //resend_queue[idx].sent_i++;
+                if (users_arr.includes(user)) {
+                    users_arr.splice(users_arr.indexOf(user,1));
+                    UserDB.remove_user(user);
+                }
+            } else {
+                if (f_i < 0) resend_queue[idx].fail_id.push(user);
+            }           
             console.log(TimeStamp()+": CAN'T send message to user>>"+user)
+            console.log("because of reason:>"+rsn);
+            console.log("<<<");
         })
         .finally(()=>{
-            let l=resend_queue[idx].success_i+resend_queue[idx].fail_id.length;
-            if(l==resend_inst.receivers_n){
-                console.log(TimeStamp()+": Finish spread message")
+            resend_queue[idx].sent_i++;
+            if(resend_queue[idx].sent_i>=resend_queue[idx].receivers_n){// >= for case when some users was acidently removed
+                SenderTimer("transmited");
             }
         });
     }
     const QUEUE_MAX_LEN=8;
-    const RESEND_INTERVAL_MIN=10;
+    const RESEND_INTERVAL_MIN=15;
     const RESEND_MAX_ATTEMPTS=24*60/RESEND_INTERVAL_MIN;//try recend during 1 day
     let resend_queue=[];
     let resend_in_work=0;
-
+    let sender_timer_id;
+    let rsi=0;
+    ///*************************************************** */
+    //in depends of 'caller' value it can be called:
+    // timeout - timeout between transmit attempts expired (in case of  absense of internet). Called by itself
+    // new - new message added to queue. Called from 'this.sendMessage2All()'
+    // transmited - previous transmitting finished. It should be checked if it is succesful or not - i.e. 
+    //              we can try to transmit next message or wait some time and make new attempt. Called from this.sendMessage.finally
+    function SenderTimer(caller="timeout"){
+        console.log(TimeStamp()+"  Sender timer called by >"+caller);
+        let tout=RESEND_INTERVAL_MIN*60*1000;//15 minutes to attempt
+        if(caller=="new"){;//new message added 
+            if(resend_in_work===0){//Queue was empty and no any sending activity before. New message has to be spread
+                resend_in_work=1;
+                users_arr.forEach( (user) => {
+                    TGBot.sendMessage(user, rsi);
+                }); 
+            }else return; //new message added but previous still in transmitting. Nothing to do
+        }else if(caller=="transmited"){// sendMessage() promise evalueted           
+            if(resend_queue[rsi].fail_id.length==0 || resend_queue[rsi].ttl<=0){//succsessfuly transmitted to ALL or it was last attempt to transmit of message
+                resend_queue.splice(rsi,1);
+                if (resend_queue.length == 0) resend_in_work = 0;//no any pending message in queue waiting to be send
+                else {//next message from queue started to transmit
+                    resend_queue[rsi].receivers_n = users_arr.length;
+                    resend_queue[rsi].sent_i = 0;
+                    users_arr.forEach((user) => { TGBot.sendMessage(user, rsi); });
+                    clearTimeout(sender_timer_id);//need re-arm timer                    
+                }
+            }else {//wait for timeout and then initiate next attempt to transmit
+//clearTimeout(sender_timer_id);
+//sender_timer_id=setTimeout(SenderTimer,15000,"timeout");//for test
+                if(resend_queue[rsi].sent_i!=0)resend_queue[rsi].ttl=3;//at least somebody received message. So we can reduce attempts just in case of some users unreachable and will failed to send to them 
+                return;//go out to wait until timeout
+            }            
+        }else{//presume caller=="timeout"
+            resend_queue[rsi].ttl--;
+            resend_queue[rsi].receivers_n = resend_queue[rsi].fail_id.length;
+            resend_queue[rsi].sent_i = 0;
+            resend_queue[rsi].fail_id.forEach((user) => { TGBot.sendMessage(user, rsi); });
+        }        
+        if(resend_in_work==1)sender_timer_id=setTimeout(SenderTimer,tout,"timeout");
+        else clearTimeout(sender_timer_id);
+    }
+    ///*************************************************** */
     this.sendMessage2All=(message)=>{
-        console.log(TimeStamp()+": Start spread message to all.")
         if(resend_queue.length<QUEUE_MAX_LEN){
             resend_queue.push({
                 fail_id:[],
-                success_i:0,
+                sent_i:0,
                 msg:message,
+                receivers_n:users_arr.length,
+                ttl:RESEND_MAX_ATTEMPTS
             })
         }
-        resend_inst.receivers_n=users_arr.length;
-        resend_inst.success_i=0;
-        resend_inst.msg=message;
-        resend_inst.fail_id=[];
-        users_arr.forEach( (user) => {
-            TGBot.sendMessage(user, message,{parse_mode: 'HTML'})
-        });    
+        SenderTimer("new");
     }
-
 }//end TGBot_ pseudo class
 const TGBot=new TGBot_();
 
@@ -136,14 +186,14 @@ const botAllSendMessage = (message) => {
 
 //Initialize  when loading file
 Init();
-let tttt=0;//!!!!
+/* let tttt=0;//!!!!
 (()=>setInterval(()=>
     {
         if(tttt!=0){
-            tttt=0;
-            botAllSendMessage(TimeStamp()+"писька");
+            //tttt=0;
+            botAllSendMessage(TimeStamp()+"тест ботика");
         }
-    },1000))();
+    },35000))(); */
 
 //Export methods to use hem in other files
 module.exports = {

@@ -72,7 +72,6 @@ function InitChart(trend_js){
                 axis: 'x',
                 intersect: false,
             },
-                //TODO vpq !!! add animation when scroll left-right
         },
         plugins:[
             {
