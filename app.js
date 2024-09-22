@@ -12,6 +12,7 @@ app.use(express.static(__dirname +'/src'))
 
 var rec_buf='';
 app.get('/',(req,res)=>{
+    console.log("new request for page "+(req.headers['x-forwarded-for'] || req.socket.remoteAddress));
     res.render('pages/index',{
         received_buf: rec_buf
     });
@@ -64,11 +65,13 @@ function ManagerResponser(){
 var mng_resp=new ManagerResponser();
 //************************************** */
 app.post('/basic_trend_data', (req, res) => {
+    console.log("new request trends "+(req.headers['x-forwarded-for'] || req.socket.remoteAddress));
     let down_req = Object.assign({ tag: 3 }, req.body);
     mng_resp.NewReq(down_req,res);
 })
 //************************************** */
 app.post('/alarms', (req, res) => {
+    console.log("new request alarms "+(req.headers['x-forwarded-for'] || req.socket.remoteAddress));
     let down_req = Object.assign({ tag: 4 }, req.body);
     mng_resp.NewReq(down_req,res);
 })
