@@ -43,7 +43,11 @@ function PumpTableDraw(jpump_data){
         }
         let al_cur=document.getElementById("cell_alarms").textContent;
 
-        if(al_prev!=='---' && al_cur!=al_prev)AlTabNewAlarm();
+        if(al_prev!=='---' && al_cur!=al_prev){
+            let tout_fg=(parseInt(al_cur) ^ parseInt(al_prev)) & 1023
+            if(document.getElementById("chk_septic_tout_filter_id").checked!=true || tout_fg!=0)
+                AlTabNewAlarm();
+        }
     }    
  }
 async function enable_trend(chk_box){

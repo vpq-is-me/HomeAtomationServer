@@ -110,7 +110,7 @@ function AlTabNewAlarm(){
     let timer=setInterval(async()=>{//sometines not realy updatet upper row because DB is not updatet yet
         let len=await AlTabSlideUp(1);
         dummy_cnt++;
-        if(len!=0 || dummy_cnt>100)clearInterval(timer);
+        if(len!=0 || dummy_cnt>3)clearInterval(timer);
     },3000);
 }
 //************** */
