@@ -98,30 +98,47 @@ unix_client.on('connect', () => {
 })
 unix_client.on('data', (msg) => {
     try {
-        var jrec = JSON.parse(msg.toString());
-//DEBUG        console.log(jrec);
-        if ('tag' in jrec) {
-            if (jrec.tag === 3 || jrec.tag === 4) {
-                mng_resp.Answer(jrec);
+        let repeat=1;
+        let message = msg.toString();
+        while (repeat != 0) {            
+            let brace_cnt = 0;
+            let i = 0;
+            for (i = 0; i < message.length; i++) {
+                if (message[i] === '{') brace_cnt++;
+                if (message[i] === '}') brace_cnt--;
+                if (brace_cnt == 0) break;
             }
-        } else {
-            rec_buf = jrec;
-            tg_alarm_disp.Update(jrec.alarms);
+            i++;
+            let js_string = message.slice(0, i);
+            var jrec = JSON.parse(js_string);
+            //DEBUG        console.log(jrec);
+            if ('tag' in jrec) {
+                if (jrec.tag === 3 || jrec.tag === 4) {
+                    mng_resp.Answer(jrec);
+                }
+            } else {
+                rec_buf = jrec;
+                tg_alarm_disp.Update(jrec.alarms);
+            }
+            if(i==message.length){
+                repeat=0;
+            }else {
+                message=message.slice(i);
+            }
         }
     } catch (error) {
         let err_str=error.toString();
+        console.log(err_str);
         if(err_str.includes("Unexpected token") && err_str.includes("in JSON at position")){
             let message=msg.toString();
-            let tok_idx=err_str.indexOf("position") + "position".length+1;
-            let pos=parseInt(err_str.slice(tok_idx));
+            let pos=parseInt(err_str.slice(err_str.indexOf("position") + "position".length+1));
             let start=pos>5 ? (pos - 5) : 0;
             let stop= pos< (message.length -6)? (pos +6) : message.length;
             let sub=message.slice(start,stop);
             console.log("errorneous part is:>>>"+sub+"<<<");
             console.log("with wrong tocken:")
             sub = sub.substring(0, pos-start) + '>' +sub[pos-start]+ '<' + sub.substring(pos-start+1);
-            console.log(sub);
-            console.log("----")
+            console.log(sub+"\n^^^^^^^");
         }
         console.error(error);
     }
