@@ -109,6 +109,20 @@ unix_client.on('data', (msg) => {
             tg_alarm_disp.Update(jrec.alarms);
         }
     } catch (error) {
+        let err_str=error.toString();
+        if(err_str.includes("Unexpected token") && err_str.includes("in JSON at position")){
+            let message=msg.toString();
+            let tok_idx=err_str.indexOf("position") + "position".length+1;
+            let pos=parseInt(err_str.slice(tok_idx));
+            let start=pos>5 ? (pos - 5) : 0;
+            let stop= pos< (message.length -6)? (pos +6) : message.length;
+            let sub=message.slice(start,stop);
+            console.log("errorneous part is:>>>"+sub+"<<<");
+            console.log("with wrong tocken:")
+            sub = sub.substring(0, pos-start) + '>' +sub[pos-start]+ '<' + sub.substring(pos-start+1);
+            console.log(sub);
+            console.log("----")
+        }
         console.error(error);
     }
 })
