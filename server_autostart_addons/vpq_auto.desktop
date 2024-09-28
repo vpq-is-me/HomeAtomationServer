@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=Application
+Name=HomeAuto
+Exec=/home/pi/Desktop/home_serv.sh
