@@ -9,6 +9,31 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.static(__dirname +'/css'))
 app.use(express.static(__dirname +'/src'))
 
+//************************************************************************ */
+//************Extend origina console.log() function  */
+// - if same message is repeated it will print only count of repeatition 
+//   instead fill concole with garbage
+let args_prev='';
+let args_same_cnt=0;
+
+let original_log = console.log
+console.log = function(){
+    let args = Array.from(arguments); // ES5
+    if(args.toString()==args_prev){
+        if(args_same_cnt!==0){
+            original_log.apply(console,["\x1b[2A"]);//step back in terminal window to update previous string
+        }
+        args_same_cnt++;
+        //erase current line before printing "\x1b[0K"
+        let msg="\x1b[0K-->\x1b[30;47mPrevious message repeated "+ args_same_cnt+"\x1b[0m";
+        original_log.apply(console,[msg]);
+    }else{
+        args_same_cnt=0;
+        original_log.apply(console, args);
+    }
+    args_prev=args.toString();
+}
+//************************************************************************ */
 
 var rec_buf='';
 app.get('/',(req,res)=>{
